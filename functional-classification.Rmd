@@ -16,6 +16,7 @@ library(tidyverse)
 library(sf)
 library(here)
 library(RColorBrewer)
+library(htmlwidgets)
 ```
 
 ## Load data
@@ -34,15 +35,22 @@ streets <- here("big_files",
 my_pal <- colorFactor(brewer.pal(7, "Set1"), 
                       domain = streets$FuncClass)
 
-leaflet(streets) %>%
+map <- leaflet(streets) %>%
   addProviderTiles(provider = "Stamen.TonerLite") %>%
   addPolylines(weight = 2.5,
                color = ~my_pal(FuncClass),
-               popup = ~FuncClass) %>%
+               popup = ~FuncClass,
+               opacity = 1) %>%
     addLegend("bottomright", 
               pal = my_pal, 
               values = ~FuncClass,
               title = "Functional Classification",
-              opacity = 1)
+              opacity = 1) %>%
+  addLegend("bottomleft",
+            title = "Data source",
+            colors = "white",
+            labels = "https://data.somervillema.gov/")
+
+saveWidget(map, "functional-class.html")
 ```
 

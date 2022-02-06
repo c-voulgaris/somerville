@@ -1,0 +1,48 @@
+---
+title: "Street Functional Classification"
+author: "Carole Voulgaris"
+date: "2/6/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library(leaflet)
+library(tidyverse)
+library(sf)
+library(here)
+library(RColorBrewer)
+```
+
+## Load data
+
+```{r}
+streets <- here("big_files",
+                "Streets",
+                "Streets.shp") %>%
+  st_read() %>%
+  st_transform("WGS84")
+```
+
+## Map data
+
+```{r}
+my_pal <- colorFactor(brewer.pal(7, "Set1"), 
+                      domain = streets$FuncClass)
+
+leaflet(streets) %>%
+  addProviderTiles(provider = "Stamen.TonerLite") %>%
+  addPolylines(weight = 2.5,
+               color = ~my_pal(FuncClass),
+               popup = ~FuncClass) %>%
+    addLegend("bottomright", 
+              pal = my_pal, 
+              values = ~FuncClass,
+              title = "Functional Classification",
+              opacity = 1)
+```
+
